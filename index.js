@@ -3,7 +3,7 @@ const mysql = require("mysql2");
 const cTable = require('console.table');
 const db = require('./config/connection');
 const { viewDepartments, viewJobs, viewEmployees, viewManagers, viewRegEmployees } = require('./lib/view');
-const { addDepartment, addEmployee } = require ('./lib/add');
+const { addDepartment, } = require ('./lib/add');
 const { updateEmployee } = require ('./lib/update');
 // const { deleteEmployee, deleteRole, deleteDepartment } = require ('./lib/delete');
 // const { budgetDepartment, budgetCompany } = require ('./lib/budget');
@@ -21,6 +21,7 @@ function getDepArray() {
             reject(err)
         } else {
             depArray = data;
+            // console.log(depArray)
         }
     });
 }
@@ -28,7 +29,7 @@ function getDepArray() {
 getDepArray();
 
 function getJobArray() {
-    const query = `SELECT role.id 'ID',role.title 'Job Title',department.name 'Department',role.salary 'Salary' FROM department JOIN role ON department.id=role.department_id`
+    const query = `SELECT role.id 'ID',role.title 'Title',department.name 'Department',role.salary 'Salary' FROM department JOIN role ON department.id=role.department_id`
 
     db.query(query, (err, data) => {
         if(err){
@@ -36,11 +37,28 @@ function getJobArray() {
             reject(err)
         } else {
             jobArray = data;
+            // console.log(jobArray)
         }
     });
 }
 
 getJobArray();
+
+function getEmpArray() {
+    const query = `SELECT employee.id 'ID', CONCAT_WS(' ', employee.first_name, employee.last_name) 'Name', role.title 'Job',department.name 'Department',role.salary 'Salary', CONCAT_WS(' ', m.first_name, m.last_name) 'Manager' FROM department JOIN role ON department.id=role.department_id JOIN employee ON role.id=employee.role_id LEFT JOIN employee AS m ON m.id = employee.manager_id`
+
+    db.query(query, (err, data) => {
+        if(err){
+            console.log("you messed up");
+            reject(err)
+        } else {
+            empArray = data;
+            // console.log(empArray)
+        }
+    });
+}
+
+getEmpArray();
 
 const startCompany = () => {
     console.log('Welcome to Our Company!')
@@ -82,11 +100,11 @@ const startCompany = () => {
                 break;
             case "Add an Employee":
                 console.log("Adding an Employee");
-                await addEmployee()
-                return startCompany();
+                addEmployee()
+                break;
             case "Update an Employee":
                 console.log("Updating an Employee");
-                await updateEmployee()
+                updateEmployee()
                 return startCompany();
             default:
                 console.log('GoodBye!');
@@ -94,7 +112,7 @@ const startCompany = () => {
     });
 };
 
-async function addRole(){
+function addRole(){
     const inqDepartments = depArray.map(department => {
         return {
             name:department.Department,
@@ -130,8 +148,54 @@ async function addRole(){
         })
 }
 
+function addEmployee(){
+    const inqJobs = jobArray.map(role => {
+        return {
+            name:role.Title,
+            value:role.ID
+            }
+        })
+    
+    const inqEmployees = empArray.map(employee => {
+        return {
+            name:employee.Name,
+            value:employee.ID
+            }
+        })
+        inquirer.prompt([
+            {
+                message: "What is the First Name of the New Employee?",
+                type: "input",
+                name: "firstName",
+            }, {
+                message: "What is the Last Name of the New Employee?",
+                type: "input",
+                name: "LastName",
+            },{
+                message: "What is the Job of the New Employee?",
+                type: "list",
+                name: "role",
+                choices: inqJobs,
+            }, {
+                message: "Who is the Manager of the New Employee?",
+                type: "list",
+                name: "manager",
+                choices: inqEmployees,
+            }
+        ]).then((answers) => {
+            const query = `INSERT INTO role (first_name, last_name, role, manager_id) VALUES (?,?,?,?)`
+
+            db.query(query, [`${answers.firstName}`, `${answers.lastName}`, `${answers.role}`,`${answers.manager}`], (err,data) => {
+                if(err){
+                    console.log("you messed up");
+                }
+                console.log("You Did It!");
+                startCompany();
+            });
+        })
+}
 
 
-// startCompany();
+startCompany();
 
 exports.startCompany = startCompany;

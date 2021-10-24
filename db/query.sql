@@ -17,8 +17,7 @@ USE company_db;
 -- DONE View All Employees
     SELECT 
         employee.id 'ID', 
-        employee.first_name 'First Name', 
-        employee.last_name 'Last Name', 
+        CONCAT_WS(' ', employee.first_name, employee.last_name) 'Name', 
         role.title 'Job',
         department.name 'Department',
         role.salary 'Salary',
@@ -63,8 +62,9 @@ USE company_db;
 
     INSERT INTO role (title, salary, department_id) VALUES (?,?,?)
 
--- Add an Employee(First Name, Last Name, Role, Manager, ID)
+-- Add an Employee(First Name, Last Name, Role, Manager_ID)
 
+    INSERT INTO role (first_name, last_name, role, manager_id) VALUES (?,?,?,?)
 
 -- Update an Employee (New Role)
 
