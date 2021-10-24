@@ -15,18 +15,18 @@ USE company_db;
     -- JOIN role ON department.id=role.department_id;
 
 -- DONE View All Employees
-    -- SELECT 
-    --     employee.id 'ID', 
-    --     employee.first_name 'First Name', 
-    --     employee.last_name 'Last Name', 
-    --     role.title 'Job',
-    --     department.name 'Department',
-    --     role.salary 'Salary',
-    --     CONCAT_WS(' ', m.first_name, m.last_name) 'Manager'
-    -- FROM department 
-    -- JOIN role ON department.id=role.department_id
-    -- JOIN employee ON role.id=employee.role_id
-    -- LEFT JOIN employee AS m ON m.id = employee.manager_id;
+    SELECT 
+        employee.id 'ID', 
+        employee.first_name 'First Name', 
+        employee.last_name 'Last Name', 
+        role.title 'Job',
+        department.name 'Department',
+        role.salary 'Salary',
+        CONCAT_WS(' ', m.first_name, m.last_name) 'Manager'
+    FROM department 
+    JOIN role ON department.id=role.department_id
+    JOIN employee ON role.id=employee.role_id
+    LEFT JOIN employee AS m ON m.id = employee.manager_id;
 
 -- DONE-View all Managers 
     -- SELECT 
@@ -57,9 +57,11 @@ USE company_db;
 
 -- Add A Department (Name)
 
+    INSERT INTO department (name) VALUES (?)
 
 -- Add a Role (Name, Salary, Department, ID)
 
+    INSERT INTO role (name) VALUES (?,?,?,?)
 
 -- Add an Employee(First Name, Last Name, Role, Manager, ID)
 

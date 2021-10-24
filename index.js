@@ -61,3 +61,6 @@ const startCompany = () => {
 };
 
 startCompany();
+
+
+exports.startCompany = startCompany;

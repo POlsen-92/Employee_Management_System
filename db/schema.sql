@@ -4,19 +4,19 @@ CREATE DATABASE company_db;
 USE company_db;
 
 CREATE TABLE department(
-  id INT NOT NULL PRIMARY KEY,
+  id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   name VARCHAR(30)
 );
 
 CREATE TABLE role(
-  id INT NOT NULL PRIMARY KEY,
+  id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
   title VARCHAR(30),
   salary DECIMAL,
   department_id INT REFERENCES department(id) ON DELETE SET NULL 
 );
 
 CREATE TABLE employee(
-  id INT PRIMARY KEY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   first_name VARCHAR(30),
   last_name VARCHAR(30),
   role_id INT REFERENCES role(id) ON DELETE SET NULL,
