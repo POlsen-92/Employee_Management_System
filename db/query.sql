@@ -1,9 +1,9 @@
 USE company_db;
 -- DONE-View all departments 
-    -- SELECT
-    --     department.id 'ID',
-    --     department.name 'Department'
-    -- FROM department;
+    SELECT
+        department.id 'ID',
+        department.name 'Department'
+    FROM department;
 
 -- DONE-View All Roles 
     -- SELECT 
@@ -59,9 +59,9 @@ USE company_db;
 
     INSERT INTO department (name) VALUES (?)
 
--- Add a Role (Name, Salary, Department, ID)
+-- Add a Role (Name, Salary, Department_ID)
 
-    INSERT INTO role (name) VALUES (?,?,?,?)
+    INSERT INTO role (title, salary, department_id) VALUES (?,?,?)
 
 -- Add an Employee(First Name, Last Name, Role, Manager, ID)
 

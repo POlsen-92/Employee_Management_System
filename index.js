@@ -3,10 +3,44 @@ const mysql = require("mysql2");
 const cTable = require('console.table');
 const db = require('./config/connection');
 const { viewDepartments, viewJobs, viewEmployees, viewManagers, viewRegEmployees } = require('./lib/view');
-const { addDepartment, addRole, addEmployee } = require ('./lib/add');
+const { addDepartment, addEmployee } = require ('./lib/add');
 const { updateEmployee } = require ('./lib/update');
 // const { deleteEmployee, deleteRole, deleteDepartment } = require ('./lib/delete');
 // const { budgetDepartment, budgetCompany } = require ('./lib/budget');
+
+let depArray = [];
+let jobArray = [];
+let empArray = [];
+
+function getDepArray() {
+    const query = `SELECT department.id 'ID', department.name 'Department' FROM department`
+
+    db.query(query, (err, data) => {
+        if(err){
+            console.log("you messed up");
+            reject(err)
+        } else {
+            depArray = data;
+        }
+    });
+}
+
+getDepArray();
+
+function getJobArray() {
+    const query = `SELECT role.id 'ID',role.title 'Job Title',department.name 'Department',role.salary 'Salary' FROM department JOIN role ON department.id=role.department_id`
+
+    db.query(query, (err, data) => {
+        if(err){
+            console.log("you messed up");
+            reject(err)
+        } else {
+            jobArray = data;
+        }
+    });
+}
+
+getJobArray();
 
 const startCompany = () => {
     console.log('Welcome to Our Company!')
@@ -44,8 +78,8 @@ const startCompany = () => {
                 return startCompany();
             case "Add a Role":
                 console.log("Adding a Role");
-                await addRole()
-                return startCompany();
+                addRole()
+                break;
             case "Add an Employee":
                 console.log("Adding an Employee");
                 await addEmployee()
@@ -60,7 +94,44 @@ const startCompany = () => {
     });
 };
 
-startCompany();
+async function addRole(){
+    const inqDepartments = depArray.map(department => {
+        return {
+            name:department.Department,
+            value:department.ID
+            }
+        })
+    
+        inquirer.prompt([
+            {
+                message: "What is the Name of the New Job?",
+                type: "input",
+                name: "name",
+            }, {
+                message: "What is the Salary of the New Job?",
+                type: "input",
+                name: "salary",
+            }, {
+                message: "What is the Department of the New Job?",
+                type: "list",
+                name: "department",
+                choices: inqDepartments,
+            }
+        ]).then((answers) => {
+            const query = `INSERT INTO role (title, salary, department_id) VALUES (?,?,?)`
 
+            db.query(query, [`${answers.name}`, `${answers.salary}`, `${answers.department}`], (err,data) => {
+                if(err){
+                    console.log("you messed up");
+                }
+                console.log("You Did It!");
+                startCompany();
+            });
+        })
+}
+
+
+
+// startCompany();
 
 exports.startCompany = startCompany;
