@@ -4,7 +4,7 @@ CREATE DATABASE company_db;
 USE company_db;
 
 CREATE TABLE department(
-  id AUTO_INCREMENT INT NOT NULL PRIMARY KEY,
+  id INT NOT NULL PRIMARY KEY,
   name VARCHAR(30)
 );
 
