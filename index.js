@@ -4,6 +4,7 @@ const cTable = require('console.table');
 const db = require('./config/connection');
 const { viewDepartments, viewJobs, viewEmployees, viewManagers, viewRegEmployees } = require('./lib/view');
 const { addDepartment, } = require ('./lib/add');
+// const array = require ('./lib/arrays');
 // const { updateEmployee } = require ('./lib/update');
 // const { deleteEmployee, deleteRole, deleteDepartment } = require ('./lib/delete');
 // const { budgetDepartment, budgetCompany } = require ('./lib/budget');
@@ -14,6 +15,10 @@ let empArray = [];
 
 const startCompany = () => {
     console.log('Welcome to Our Company!')
+
+    // await array.getDepArray()
+    // await array.getJobArray()
+    // await array.getEmpArray()
 
     inquirer.prompt({
         message: "What Do You Want To Do?",
@@ -80,8 +85,6 @@ function getDepArray() {
     });
 }
 
-getDepArray();
-
 function getJobArray() {
     const query = `SELECT role.id 'ID',role.title 'Title',department.name 'Department',role.salary 'Salary' FROM department JOIN role ON department.id=role.department_id`
 
@@ -95,8 +98,6 @@ function getJobArray() {
         }
     });
 }
-
-getJobArray();
 
 function getEmpArray() {
     const query = `SELECT employee.id 'ID', CONCAT_WS(' ', employee.first_name, employee.last_name) 'Name', role.title 'Job',department.name 'Department',role.salary 'Salary', CONCAT_WS(' ', m.first_name, m.last_name) 'Manager' FROM department JOIN role ON department.id=role.department_id JOIN employee ON role.id=employee.role_id LEFT JOIN employee AS m ON m.id = employee.manager_id`
@@ -112,6 +113,8 @@ function getEmpArray() {
     });
 }
 
+getDepArray();
+getJobArray();
 getEmpArray();
 
 
@@ -169,6 +172,8 @@ function addEmployee(){
             }
         })
 
+    inqEmployees.push("None");
+
     inquirer.prompt([
         {
             message: "What is the First Name of the New Employee?",
@@ -183,24 +188,20 @@ function addEmployee(){
             type: "list",
             name: "role",
             choices: inqJobs,
-        },{
-            message: "Will this Employee Have a Manager? (Y/N)",
-            type: "confirm",
-            name: "willManager",
         },{   
             message: "Who is the Manager of the New Employee?",
             type: "list",
             name: "manager",
-            choices: inqEmployees,
-            when: (answers) => {answers.willManager === true},
-            default: null
+            choices: inqEmployees
         }
     ]).then((answers) => {
         const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`
-
+        if(answers.manager =="None") {
+            answers.manager = 0;
+        }
         db.query(query, [`${answers.firstName}`, `${answers.lastName}`, `${answers.role}`,`${answers.manager}`], (err,data) => {
             if(err){
-                console.log("you messed up");
+                console.log(err);
             } else {
             console.log("You Did It!");
             }
@@ -284,6 +285,7 @@ function updateEmployeeRole(){
         });
     })
 }
+
 
 
 startCompany();
