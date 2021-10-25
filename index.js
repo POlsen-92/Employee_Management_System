@@ -47,6 +47,10 @@ const startCompany = () => {
                 console.log("Viewing Non-Manager Employees");
                 await viewRegEmployees()
                 return startCompany();
+            case "View Employees by Manager":
+                console.log("Viewing Employees by Manager");
+                viewRegEmployees()
+                return startCompany();
             case "Add a Department":
                 console.log("Adding a Department");
                 await addDepartment()
@@ -59,9 +63,25 @@ const startCompany = () => {
                 console.log("Adding an Employee");
                 addEmployee()
                 break;
-            case "Update an Employee":
+            case "Update an Employee Role":
                 console.log("Updating an Employee");
                 updateEmployeeRole()
+                break;
+            case "Update an Employee's Manager":
+                console.log("Updating an Employee");
+                updateEmployeeManager()
+                break;
+            case "Delete a Department":
+                console.log("Deleting a Department");
+                deleteDepartment()
+                break;
+            case "Delete a Role":
+                console.log("Deleting a Role");
+                deleteRole()
+                break;
+            case "Delete an Employee":
+                console.log("Deleting an Employee");
+                deleteEmployee()
                 break;
             default:
                 console.log('GoodBye!');
@@ -117,6 +137,37 @@ getDepArray();
 getJobArray();
 getEmpArray();
 
+//  VIEW EMPLOYEES BY MANAGER
+function viewManEmployees() {
+    const inqEmployees = empArray.map(employee => {
+        return {
+            name:employee.Name,
+            value:employee.ID
+            }
+        })
+    inqEmployees.push("None");
+    inquirer.prompt(
+        {
+            message: "What is the name of the Manager whose employees you want to see?",
+            type: "list",
+            name: "manager",
+            choices: inqEmployees
+    }).then((answers) => {
+        const query = `SELECT employee.id 'ID', CONCAT_WS(' ', employee.first_name, employee.last_name) 'Name', role.title 'Job',department.name 'Department',role.salary 'Salary',CONCAT_WS(' ', m.first_name, m.last_name) 'Manager'FROM department JOIN role ON department.id=role.department_id JOIN employee ON role.id=employee.role_id LEFT JOIN employee AS m ON m.id = employee.manager_id WHERE employee.manager_id = ?`
+
+        db.query(query, answers.manager, (err,data) => {
+            if(err){
+                console.log("you messed up");
+                console.log(err)
+            }
+            console.log('You did it!');
+            startCompany();
+        });
+    })
+};
+
+//VIEW EMPLOYEES BY DEPARTMENT
+
 
 // ADD JOB //
 function addRole(){
@@ -164,14 +215,12 @@ function addEmployee(){
             value:role.ID
             }
         })
-    
     const inqEmployees = empArray.map(employee => {
         return {
             name:employee.Name,
             value:employee.ID
             }
         })
-
     inqEmployees.push("None");
 
     inquirer.prompt([
@@ -179,7 +228,7 @@ function addEmployee(){
             message: "What is the First Name of the New Employee?",
             type: "input",
             name: "firstName",
-        }, {
+        },{
             message: "What is the Last Name of the New Employee?",
             type: "input",
             name: "lastName",
@@ -252,7 +301,7 @@ function updateEmployeeRole(){
 }
 
 //UPDATE EMPLOYEE MANAGER
-function updateEmployeeRole(){
+function updateEmployeeManager(){
     const inqEmployees = empArray.map(employee => {
         return {
             name:employee.Name,
@@ -266,7 +315,7 @@ function updateEmployeeRole(){
             type: "list",
             name: "name",
             choices: inqEmployees,
-        }, {
+        },{
             message: "Which Employee Should Be Their Manager?",
             type: "list",
             name: "manager",
@@ -285,6 +334,45 @@ function updateEmployeeRole(){
         });
     })
 }
+
+// DELETE FUNCTIONS
+
+function deleteEmployee() {
+    const query = ``
+
+    db.query(query, (err,data) => {
+        if(err){
+            console.log("you messed up");
+            console.log(err)
+        }
+        console.table("You Did it!");
+    });
+}
+
+function deleteRole() {
+    const query = ``
+
+    db.query(query, (err,data) => {
+        if(err){
+            console.log("you messed up");
+            console.log(err)
+        }
+        console.table("You Did it!");
+    });
+}
+
+function deleteDepartment() {
+    const query = ``
+
+    db.query(query, (err,data) => {
+        if(err){
+            console.log("you messed up");
+            console.log(err)
+        }
+        console.table("You Did it!");
+    });
+}
+
 
 
 
