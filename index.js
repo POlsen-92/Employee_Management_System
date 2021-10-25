@@ -4,7 +4,7 @@ const cTable = require('console.table');
 const db = require('./config/connection');
 const { viewDepartments, viewJobs, viewEmployees, viewManagers, viewRegEmployees } = require('./lib/view');
 const { addDepartment, } = require ('./lib/add');
-const { updateEmployee } = require ('./lib/update');
+// const { updateEmployee } = require ('./lib/update');
 // const { deleteEmployee, deleteRole, deleteDepartment } = require ('./lib/delete');
 // const { budgetDepartment, budgetCompany } = require ('./lib/budget');
 
@@ -12,6 +12,60 @@ let depArray = [];
 let jobArray = [];
 let empArray = [];
 
+const startCompany = () => {
+    console.log('Welcome to Our Company!')
+
+    inquirer.prompt({
+        message: "What Do You Want To Do?",
+        type: "list",
+        name: "question",
+        choices:['View All Departments', 'View All Jobs', 'View All Employees', 'View All Managers', 'View All Non-Manager Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee',"Quit"]
+    }).then(async (answers) => {
+        switch (answers.question) {
+            case "View All Departments":
+                console.log("Viewing All Departments");
+                await viewDepartments();
+                return startCompany();
+            case "View All Jobs":
+                console.log("Viewing All Jobs");
+                await viewJobs();
+                return startCompany();
+            case "View All Employees":
+                console.log("Viewing All Employees");
+                await viewEmployees();
+                return startCompany();
+            case "View All Managers":
+                console.log("Viewing Managers");
+                await viewManagers()
+                return startCompany();
+            case "View All Non-Manager Employees":
+                console.log("Viewing Non-Manager Employees");
+                await viewRegEmployees()
+                return startCompany();
+            case "Add a Department":
+                console.log("Adding a Department");
+                await addDepartment()
+                return startCompany();
+            case "Add a Role":
+                console.log("Adding a Role");
+                addRole()
+                break;
+            case "Add an Employee":
+                console.log("Adding an Employee");
+                addEmployee()
+                break;
+            case "Update an Employee":
+                console.log("Updating an Employee");
+                updateEmployeeRole()
+                break;
+            default:
+                console.log('GoodBye!');
+        };
+    });
+};
+
+
+// FUNCTIONS FOR GETTING ARRAYS
 function getDepArray() {
     const query = `SELECT department.id 'ID', department.name 'Department' FROM department`
 
@@ -60,58 +114,8 @@ function getEmpArray() {
 
 getEmpArray();
 
-const startCompany = () => {
-    console.log('Welcome to Our Company!')
 
-    inquirer.prompt({
-        message: "What Do You Want To Do?",
-        type: "list",
-        name: "question",
-        choices:['View All Departments', 'View All Jobs', 'View All Employees', 'View All Managers', 'View All Non-Manager Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee',"Quit"]
-    }).then(async (answers) => {
-        switch (answers.question) {
-            case "View All Departments":
-                console.log("Viewing All Departments");
-                await viewDepartments();
-                return startCompany();
-            case "View All Jobs":
-                console.log("Viewing All Jobs");
-                await viewJobs();
-                return startCompany();
-            case "View All Employees":
-                console.log("Viewing All Employees");
-                await viewEmployees();
-                return startCompany();
-            case "View All Managers":
-                console.log("Viewing Managers");
-                await viewManagers()
-                return startCompany();
-            case "View All Non-Manager Employees":
-                console.log("Viewing Non-Manager Employees");
-                await viewRegEmployees()
-                return startCompany();
-            case "Add a Department":
-                console.log("Adding a Department");
-                await addDepartment()
-                return startCompany();
-            case "Add a Role":
-                console.log("Adding a Role");
-                addRole()
-                break;
-            case "Add an Employee":
-                console.log("Adding an Employee");
-                addEmployee()
-                break;
-            case "Update an Employee":
-                console.log("Updating an Employee");
-                updateEmployee()
-                return startCompany();
-            default:
-                console.log('GoodBye!');
-        };
-    });
-};
-
+// ADD JOB //
 function addRole(){
     const inqDepartments = depArray.map(department => {
         return {
@@ -148,6 +152,8 @@ function addRole(){
         })
 }
 
+
+// ADD EMPLOYEE
 function addEmployee(){
     const inqJobs = jobArray.map(role => {
         return {
@@ -170,7 +176,7 @@ function addEmployee(){
             }, {
                 message: "What is the Last Name of the New Employee?",
                 type: "input",
-                name: "LastName",
+                name: "lastName",
             },{
                 message: "What is the Job of the New Employee?",
                 type: "list",
@@ -183,19 +189,94 @@ function addEmployee(){
                 choices: inqEmployees,
             }
         ]).then((answers) => {
-            const query = `INSERT INTO role (first_name, last_name, role, manager_id) VALUES (?,?,?,?)`
+            const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`
 
             db.query(query, [`${answers.firstName}`, `${answers.lastName}`, `${answers.role}`,`${answers.manager}`], (err,data) => {
                 if(err){
                     console.log("you messed up");
-                }
+                } else {
                 console.log("You Did It!");
+                }
                 startCompany();
             });
         })
 }
 
 
-startCompany();
+// UPDATE EMPLOYEE JOB//
+function updateEmployeeRole(){
+    const inqEmployees = empArray.map(employee => {
+        return {
+            name:employee.Name,
+            value:employee.ID
+            }
+        })
+    const inqJobs = jobArray.map(role => {
+        return {
+            name:role.Title,
+            value:role.ID
+            }
+        })
+    inquirer.prompt([
+        {
+            message: "Which Employee Do You Want to Update?",
+            type: "list",
+            name: "name",
+            choices: inqEmployees,
+        }, {
+            message: "What Job do You Want this Employee to Have?",
+            type: "list",
+            name: "job",
+            choices: inqJobs
+        }
+    ]).then((answers) => {
+        const query = `UPDATE employee SET role_id = (?) WHERE employee.id = (?)`
 
-exports.startCompany = startCompany;
+        db.query(query, [`${answers.job}`, `${answers.name}`], (err,data) => {
+            if(err){
+                console.log("you messed up");
+            } else {
+            console.log("You Did It!");
+            }
+            startCompany();
+        });
+    })
+}
+
+//UPDATE EMPLOYEE MANAGER
+function updateEmployeeRole(){
+    const inqEmployees = empArray.map(employee => {
+        return {
+            name:employee.Name,
+            value:employee.ID
+            }
+        })
+
+    inquirer.prompt([
+        {
+            message: "Which Employee Do You Want to Update?",
+            type: "list",
+            name: "name",
+            choices: inqEmployees,
+        }, {
+            message: "Which Employee Should Be Their Manager?",
+            type: "list",
+            name: "manager",
+            choices: inqEmployees
+        }
+    ]).then((answers) => {
+        const query = `UPDATE employee SET manager_id = (?) WHERE employee.id = (?)`
+
+        db.query(query, [`${answers.manager}`, `${answers.name}`], (err,data) => {
+            if(err){
+                console.log("you messed up");
+            } else {
+            console.log("You Did It!");
+            }
+            startCompany();
+        });
+    })
+}
+
+
+startCompany();

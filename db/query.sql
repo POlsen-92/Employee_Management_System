@@ -54,25 +54,25 @@ USE company_db;
     -- JOIN employee ON role.id=employee.role_id
     -- JOIN employee AS m ON m.id = employee.manager_id
 
--- Add A Department (Name)
+-- DONE -- Add A Department (Name)
 
-    INSERT INTO department (name) VALUES (?)
+    -- INSERT INTO department (name) VALUES (?)
 
--- Add a Role (Name, Salary, Department_ID)
+-- DONE -- Add a Role (Name, Salary, Department_ID)
 
-    INSERT INTO role (title, salary, department_id) VALUES (?,?,?)
+    -- INSERT INTO role (title, salary, department_id) VALUES (?,?,?)
 
--- Add an Employee(First Name, Last Name, Role, Manager_ID)
+-- DONE -- Add an Employee(First Name, Last Name, Role, Manager_ID)
 
-    INSERT INTO role (first_name, last_name, role, manager_id) VALUES (?,?,?,?)
+    -- INSERT INTO role (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)
 
--- Update an Employee (New Role)
+-- DONE -- Update an Employee (New Role)
 
-
+    -- UPDATE employee SET role_id = (?) WHERE employee.id = (?)
 
 -- BONUS
     -- Update an Employee Manager
-
+    UPDATE employee SET manager_id = (?) WHERE employee.id = (?)
 
     -- View Employees by Manager
 
