@@ -85,7 +85,18 @@ USE company_db;
     WHERE employee.manager_id = 4;
 
     -- View Employees by Department
-
+    SELECT 
+        employee.id 'ID', 
+        CONCAT_WS(' ', employee.first_name, employee.last_name) 'Name', 
+        role.title 'Job',
+        department.name 'Department',
+        role.salary 'Salary',
+        CONCAT_WS(' ', m.first_name, m.last_name) 'Manager'
+    FROM department 
+    JOIN role ON department.id=role.department_id
+    JOIN employee ON role.id=employee.role_id
+    LEFT JOIN employee AS m ON m.id = employee.manager_id
+    WHERE role.department_id = 4;
 
     -- Delete Departments, Roles and Employees
 

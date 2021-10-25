@@ -24,50 +24,54 @@ const startCompany = () => {
         message: "What Do You Want To Do?",
         type: "list",
         name: "question",
-        choices:['View All Departments', 'View All Jobs', 'View All Employees', 'View All Managers', 'View All Non-Manager Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee',"Quit"]
+        choices:['View All Departments', 'View All Jobs', 'View All Employees', 'View All Managers', 'View All Non-Manager Employees', 'View Employees by Manager', 'View Employees by Department', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role', "Update an Employee's Manager","Delete an Employee","Delete a Role", "Delete a Department", "Quit"]
     }).then(async (answers) => {
         switch (answers.question) {
-            case "View All Departments":
+            case "View All Departments": //done
                 console.log("Viewing All Departments");
                 await viewDepartments();
                 return startCompany();
-            case "View All Jobs":
+            case "View All Jobs": //done
                 console.log("Viewing All Jobs");
                 await viewJobs();
                 return startCompany();
-            case "View All Employees":
+            case "View All Employees": //done
                 console.log("Viewing All Employees");
                 await viewEmployees();
                 return startCompany();
-            case "View All Managers":
+            case "View All Managers": //done
                 console.log("Viewing Managers");
                 await viewManagers()
                 return startCompany();
-            case "View All Non-Manager Employees":
+            case "View All Non-Manager Employees": //done
                 console.log("Viewing Non-Manager Employees");
                 await viewRegEmployees()
                 return startCompany();
-            case "View Employees by Manager":
+            case "View Employees by Manager": //done
                 console.log("Viewing Employees by Manager");
-                viewRegEmployees()
-                return startCompany();
-            case "Add a Department":
+                viewManEmployees();
+                break;
+            case "View Employees by Department": //done
+                console.log("Viewing Employees by Department");
+                viewDepEmployees();
+                break;
+            case "Add a Department": //done
                 console.log("Adding a Department");
                 await addDepartment()
                 return startCompany();
-            case "Add a Role":
+            case "Add a Role": //done
                 console.log("Adding a Role");
                 addRole()
                 break;
-            case "Add an Employee":
+            case "Add an Employee": //done
                 console.log("Adding an Employee");
                 addEmployee()
                 break;
-            case "Update an Employee Role":
+            case "Update an Employee Role": //done
                 console.log("Updating an Employee");
                 updateEmployeeRole()
                 break;
-            case "Update an Employee's Manager":
+            case "Update an Employee's Manager": //done
                 console.log("Updating an Employee");
                 updateEmployeeManager()
                 break;
@@ -161,13 +165,40 @@ function viewManEmployees() {
                 console.log(err)
             }
             console.log('You did it!');
+            console.table(data)
             startCompany();
         });
-    })
+    });
 };
 
 //VIEW EMPLOYEES BY DEPARTMENT
+function viewDepEmployees() {
+    const inqDepartments = depArray.map(department => {
+        return {
+            name:department.Department,
+            value:department.ID
+            }
+        })
+    inquirer.prompt(
+        {
+            message: "What is the name of the Department whose employees you want to see?",
+            type: "list",
+            name: "department",
+            choices: inqDepartments
+    }).then((answers) => {
+        const query = `SELECT employee.id 'ID', CONCAT_WS(' ', employee.first_name, employee.last_name) 'Name', role.title 'Job',department.name 'Department',role.salary 'Salary',CONCAT_WS(' ', m.first_name, m.last_name) 'Manager'FROM department JOIN role ON department.id=role.department_id JOIN employee ON role.id=employee.role_id LEFT JOIN employee AS m ON m.id = employee.manager_id WHERE role.department_id = ?`
 
+        db.query(query, answers.department, (err,data) => {
+            if(err){
+                console.log("you messed up");
+                console.log(err)
+            }
+            console.log('You did it!');
+            console.table(data)
+            startCompany();
+        });
+    });
+};
 
 // ADD JOB //
 function addRole(){
@@ -308,7 +339,7 @@ function updateEmployeeManager(){
             value:employee.ID
             }
         })
-
+        inqEmployees.push("None");
     inquirer.prompt([
         {
             message: "Which Employee Do You Want to Update?",
@@ -323,7 +354,9 @@ function updateEmployeeManager(){
         }
     ]).then((answers) => {
         const query = `UPDATE employee SET manager_id = (?) WHERE employee.id = (?)`
-
+        if(answers.manager =="None") {
+            answers.manager = 0;
+        }
         db.query(query, [`${answers.manager}`, `${answers.name}`], (err,data) => {
             if(err){
                 console.log("you messed up");
