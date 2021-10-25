@@ -98,7 +98,16 @@ USE company_db;
     LEFT JOIN employee AS m ON m.id = employee.manager_id
     WHERE role.department_id = 4;
 
-    -- Delete Departments, Roles and Employees
+    -- Delete Department 
+    
+    DELETE FROM department WHERE department.id = ?;
+    
+    -- Delete Role 
 
+    DELETE FROM role WHERE role.id = ?;
+    
+    -- Delete Employees
+
+    DELETE FROM employee WHERE employee.id = ?;
 
     -- View Total Budget of the departments
