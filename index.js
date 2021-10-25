@@ -17,7 +17,7 @@ const startCompany = async () => {
         message: "What Do You Want To Do?",
         type: "list",
         name: "question",
-        choices:['View All Departments','View All Jobs','View All Employees','View All Managers','View All Non-Manager Employees','View Employees by Manager','View Employees by Department','Add a Department','Add a Role','Add an Employee','Update an Employee Role',"Update an Employee's Manager","Delete a Department","Delete a Role","Delete an Employee","Quit"]
+        choices:['View All Departments','View All Jobs','View All Employees','View Employees by Manager','View Employees by Department','Add a Department','Add a Role','Add an Employee','Update an Employee Role',"Update an Employee's Manager","Delete a Department","Delete a Role","Delete an Employee","Quit"]
     }).then(async (answers) => {
         switch (answers.question) {
             case "View All Departments": 
@@ -31,14 +31,6 @@ const startCompany = async () => {
             case "View All Employees": 
                 console.log("Viewing All Employees");
                 await view.employees();
-                return startCompany();
-            case "View All Managers": 
-                console.log("Viewing Managers");
-                await view.managers()
-                return startCompany();
-            case "View All Non-Manager Employees": 
-                console.log("Viewing Non-Manager Employees");
-                await view.regEmployees()
                 return startCompany();
             case "View Employees by Manager": 
                 console.log("Viewing Employees by Manager");
