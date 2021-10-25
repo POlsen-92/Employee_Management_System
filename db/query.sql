@@ -72,7 +72,7 @@ USE company_db;
 
 -- BONUS
     -- Update an Employee Manager
-    UPDATE employee SET manager_id = (?) WHERE employee.id = (?)
+        -- UPDATE employee SET manager_id = (?) WHERE employee.id = (?)
 
     -- View Employees by Manager
 

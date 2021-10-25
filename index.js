@@ -124,32 +124,32 @@ function addRole(){
             }
         })
     
-        inquirer.prompt([
-            {
-                message: "What is the Name of the New Job?",
-                type: "input",
-                name: "name",
-            }, {
-                message: "What is the Salary of the New Job?",
-                type: "input",
-                name: "salary",
-            }, {
-                message: "What is the Department of the New Job?",
-                type: "list",
-                name: "department",
-                choices: inqDepartments,
-            }
-        ]).then((answers) => {
-            const query = `INSERT INTO role (title, salary, department_id) VALUES (?,?,?)`
+    inquirer.prompt([
+        {
+            message: "What is the Name of the New Job?",
+            type: "input",
+            name: "name",
+        }, {
+            message: "What is the Salary of the New Job?",
+            type: "input",
+            name: "salary",
+        }, {
+            message: "What is the Department of the New Job?",
+            type: "list",
+            name: "department",
+            choices: inqDepartments,
+        }
+    ]).then((answers) => {
+        const query = `INSERT INTO role (title, salary, department_id) VALUES (?,?,?)`
 
-            db.query(query, [`${answers.name}`, `${answers.salary}`, `${answers.department}`], (err,data) => {
-                if(err){
-                    console.log("you messed up");
-                }
-                console.log("You Did It!");
-                startCompany();
-            });
-        })
+        db.query(query, [`${answers.name}`, `${answers.salary}`, `${answers.department}`], (err,data) => {
+            if(err){
+                console.log("you messed up");
+            }
+            console.log("You Did It!");
+            startCompany();
+        });
+    })
 }
 
 
@@ -168,38 +168,45 @@ function addEmployee(){
             value:employee.ID
             }
         })
-        inquirer.prompt([
-            {
-                message: "What is the First Name of the New Employee?",
-                type: "input",
-                name: "firstName",
-            }, {
-                message: "What is the Last Name of the New Employee?",
-                type: "input",
-                name: "lastName",
-            },{
-                message: "What is the Job of the New Employee?",
-                type: "list",
-                name: "role",
-                choices: inqJobs,
-            }, {
-                message: "Who is the Manager of the New Employee?",
-                type: "list",
-                name: "manager",
-                choices: inqEmployees,
-            }
-        ]).then((answers) => {
-            const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`
 
-            db.query(query, [`${answers.firstName}`, `${answers.lastName}`, `${answers.role}`,`${answers.manager}`], (err,data) => {
-                if(err){
-                    console.log("you messed up");
-                } else {
-                console.log("You Did It!");
-                }
-                startCompany();
-            });
-        })
+    inquirer.prompt([
+        {
+            message: "What is the First Name of the New Employee?",
+            type: "input",
+            name: "firstName",
+        }, {
+            message: "What is the Last Name of the New Employee?",
+            type: "input",
+            name: "lastName",
+        },{
+            message: "What is the Job of the New Employee?",
+            type: "list",
+            name: "role",
+            choices: inqJobs,
+        },{
+            message: "Will this Employee Have a Manager? (Y/N)",
+            type: "confirm",
+            name: "willManager",
+        },{   
+            message: "Who is the Manager of the New Employee?",
+            type: "list",
+            name: "manager",
+            choices: inqEmployees,
+            when: (answers) => {answers.willManager === true},
+            default: null
+        }
+    ]).then((answers) => {
+        const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`
+
+        db.query(query, [`${answers.firstName}`, `${answers.lastName}`, `${answers.role}`,`${answers.manager}`], (err,data) => {
+            if(err){
+                console.log("you messed up");
+            } else {
+            console.log("You Did It!");
+            }
+            startCompany();
+        });
+    })
 }
 
 
