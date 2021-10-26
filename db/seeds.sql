@@ -18,11 +18,11 @@ VALUES ("Support Lead",50000,1),
        ("Secretary",60000,4);
 
 INSERT INTO employee (first_name,last_name, role_id, manager_id)
-VALUES ("Bob","Smith",1,NULL),
-       ("Vanessa","Brooks",3,NULL),
-       ("Carrie","Holland",5,NULL),
-       ("John","Stone",8,NULL),
-       ("Larry","Scott",10,NULL),
+VALUES ("Bob","Smith",1,0),
+       ("Vanessa","Brooks",3,0),
+       ("Carrie","Holland",5,0),
+       ("John","Stone",8,0),
+       ("Larry","Scott",10,0),
        ("Candace","Holt",2,1),
        ("Johnathan","Rust",2,1),
        ("Earnest","Hemingway",4,2),

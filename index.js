@@ -1,6 +1,7 @@
 const inquirer = require("inquirer");
-const cTable = require('console.table');
-const view = require('./lib/view');
+const cTable = require('console.table'); //Creates the tables with inquirer
+//Below are the different librarys where I am pulling functions from
+const view = require('./lib/view'); 
 const add = require ('./lib/add');
 const array = require ('./lib/arrays');
 const update = require ('./lib/update');
@@ -9,6 +10,7 @@ const del = require ('./lib/delete');
 const startCompany = async () => {
     console.log('Welcome to Our Company!')
 
+    //Arrays which will be used in the different libraries to populate options for inquirer coming from arrays.js
     let depArray = await array.getDepArray()
     let jobArray = await array.getJobArray()
     let empArray = await array.getEmpArray()
@@ -20,7 +22,7 @@ const startCompany = async () => {
         choices:['View All Departments','View All Jobs','View All Employees','View Employees by Manager','View Employees by Department','Add a Department','Add a Role','Add an Employee','Update an Employee Role',"Update an Employee's Manager","Delete a Department","Delete a Role","Delete an Employee","Quit"]
     }).then(async (answers) => {
         switch (answers.question) {
-            case "View All Departments": 
+            case "View All Departments":                // VIEWING OPTIONS COMING FROM view.js
                 console.log("Viewing All Departments");
                 await view.departments();
                 return startCompany();
@@ -40,7 +42,7 @@ const startCompany = async () => {
                 console.log("Viewing Employees by Department");
                 await view.depEmployees();
                 return startCompany();
-            case "Add a Department": 
+            case "Add a Department":                    // ADD OPTIONS COMING FROM add.js
                 console.log("Adding a Department");
                 await add.department()
                 return startCompany();
@@ -52,7 +54,7 @@ const startCompany = async () => {
                 console.log("Adding an Employee");
                 await add.employee()
                 return startCompany();
-            case "Update an Employee Role": 
+            case "Update an Employee Role":             // UPDATE OPTIONS COMING FROM update.js
                 console.log("Updating an Employee");
                 await update.employeeRole()
                 return startCompany();
@@ -60,7 +62,7 @@ const startCompany = async () => {
                 console.log("Updating an Employee");
                 await update.employeeManager()
                 return startCompany();
-            case "Delete a Department":
+            case "Delete a Department":                 // DELETE OPTIONS COMING FROM delete.js
                 console.log("Deleting a Department");
                 await del.department()
                 return startCompany();
